@@ -1,7 +1,8 @@
 #[derive(Debug, PartialEq)]
 pub enum Token {
     Integer(i64),
-    Symbol(String),
+    Float(f64),
+    Str(String),
     LParen,
     RParen,
 }
@@ -18,8 +19,10 @@ pub fn tokenize(expr: &str) -> Vec<Token> {
             _ => {
                 if let Ok(i) = word.parse::<i64>() {
                     tokens.push(Token::Integer(i))
+                } else if let Ok(f) = word.parse::<f64>() {
+                    tokens.push(Token::Float(f))
                 } else {
-                    tokens.push(Token::Symbol(word.to_string()))
+                    tokens.push(Token::Str(word.to_string()))
                 }
             }
         }
@@ -37,7 +40,7 @@ mod tests {
             tokens,
             vec![
                 Token::LParen,
-                Token::Symbol("+".to_string()),
+                Token::Str("+".to_string()),
                 Token::Integer(1),
                 Token::Integer(2),
                 Token::RParen,

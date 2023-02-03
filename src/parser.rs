@@ -25,6 +25,7 @@ pub fn parse(program: &str) -> Result<LispObj, ParseError> {
 }
 
 fn parse_tokens(tokens: &mut Vec<Token>) -> Result<LispObj, ParseError> {
+    tokens.reverse();
     let token = tokens.pop();
     if token != Some(Token::LParen) {
         return Err(ParseError {
@@ -33,11 +34,18 @@ fn parse_tokens(tokens: &mut Vec<Token>) -> Result<LispObj, ParseError> {
     }
 
     let mut obj: Vec<LispObj> = Vec::new();
+    println!("IM here");
     while !tokens.is_empty() {
         if let Some(token) = tokens.pop() {
+            println!("{:?}", token);
             match token {
                 Token::Integer(i) => obj.push(LispObj::Integer(i)),
-                Token::Symbol(s) => obj.push(LispObj::Symbol(s)),
+                Token::Float(f) => obj.push(LispObj::Float(f)),
+                Token::Str(s) => match s.as_ref() {
+                    "true" => obj.push(LispObj::Bool(true)),
+                    "false" => obj.push(LispObj::Bool(false)),
+                    _ => obj.push(LispObj::Symbol(s)),
+                },
                 Token::LParen => {
                     tokens.push(Token::LParen);
                     let sub_obj = parse_tokens(tokens)?;
